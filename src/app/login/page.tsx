@@ -11,8 +11,8 @@ export default function LoginPage() {
             <Hexagon className="h-8 w-8 text-white" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Beezwax</h1>
-            <p className="text-sm text-gray-500">Business Intelligence</p>
+            <h1 className="text-2xl font-bold text-gray-900">WRP Staging</h1>
+            <p className="text-sm text-gray-500">Operational Health</p>
           </div>
         </div>
 
@@ -24,7 +24,7 @@ export default function LoginPage() {
           <form
             action={async () => {
               "use server"
-              await signIn("microsoft-entra-id", { redirectTo: "/dashboard" })
+              await signIn("microsoft-entra-id", { redirectTo: "/" })
             }}
           >
             <Button

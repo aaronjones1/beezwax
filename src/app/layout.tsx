@@ -1,14 +1,24 @@
 import type { Metadata } from "next"
-import { Fira_Code } from "next/font/google"
+import { Fraunces, Space_Mono } from "next/font/google"
 import "./globals.css"
 import { cn } from "@/lib/utils"
-import { SessionProvider } from "next-auth/react"
+import { Providers } from "@/components/providers"
+import AppLayout from "@/components/app-layout"
 
-const firaCode = Fira_Code({ subsets: ["latin"] })
+const fraunces = Fraunces({
+  subsets: ["latin"],
+  variable: "--font-heading",
+})
+
+const spaceMono = Space_Mono({
+  subsets: ["latin"],
+  variable: "--font-body",
+  weight: ["400", "700"],
+})
 
 export const metadata: Metadata = {
-  title: "Beezwax - Business Intelligence",
-  description: "Log aggregation and business intelligence dashboard",
+  title: "WRP Staging - Operational Health",
+  description: "Operational health dashboard for WRP Staging",
 }
 
 export default function RootLayout({
@@ -18,8 +28,16 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={cn(firaCode.className, "min-h-screen bg-background antialiased")}>
-        <SessionProvider>{children}</SessionProvider>
+      <body
+        className={cn(
+          fraunces.variable,
+          spaceMono.variable,
+          "min-h-screen bg-background antialiased"
+        )}
+      >
+        <Providers>
+          <AppLayout>{children}</AppLayout>
+        </Providers>
       </body>
     </html>
   )

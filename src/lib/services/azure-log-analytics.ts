@@ -17,13 +17,19 @@ export interface QueryResult {
 export async function queryAzureLogs(
   workspaceId: string,
   query: string,
-  timespan: { startTime: Date; endTime: Date } = {
-    startTime: new Date(Date.now() - 24 * 60 * 60 * 1000),
-    endTime: new Date(),
-  }
+  timespan?: { startTime: Date; endTime: Date }
 ): Promise<QueryResult> {
+  console.log("Executing query:", query)
+
   const tokenCredential = new DefaultAzureCredential()
   const token = await tokenCredential.getToken("https://api.loganalytics.io/.default")
+
+  const resolvedTimespan =
+    timespan ||
+    {
+      startTime: new Date(Date.now() - 24 * 60 * 60 * 1000),
+      endTime: new Date(),
+    }
 
   const response = await fetch(
     `https://api.loganalytics.io/v1/workspaces/${workspaceId}/query`,
@@ -35,13 +41,15 @@ export async function queryAzureLogs(
       },
       body: JSON.stringify({
         query,
-        timespan: `${timespan.startTime.toISOString()}/${timespan.endTime.toISOString()}`,
+        timespan: `${resolvedTimespan.startTime.toISOString()}/${resolvedTimespan.endTime.toISOString()}`,
       }),
     }
   )
 
   if (!response.ok) {
-    throw new Error(`Azure Log Analytics query failed: ${response.statusText}`)
+    const errorText = await response.text()
+    console.error("Azure Log Analytics error response:", errorText)
+    throw new Error(`Azure Log Analytics query failed: ${response.statusText} - ${errorText}`)
   }
 
   const data = await response.json()
