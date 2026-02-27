@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server"
+import { auth } from "@/auth"
 import { queryAzureLogs, getAzureWorkspaceId } from "@/lib/services/azure-log-analytics"
 
 function parseTimespan(window: string) {
@@ -17,6 +18,11 @@ function parseTimespan(window: string) {
 
 export async function POST(request: NextRequest) {
   try {
+    const session = await auth()
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
+
     const body = await request.json()
     const query = body.query
     const timespan = typeof body.timespan === "string" ? body.timespan : null

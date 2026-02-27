@@ -1,8 +1,25 @@
-import { signIn } from "@/auth"
+import { auth, signIn } from "@/auth"
 import { Button } from "@/components/ui/button"
 import { ArrowRight, Hexagon } from "lucide-react"
+import { redirect } from "next/navigation"
 
-export default function LoginPage() {
+export default async function LoginPage({
+  searchParams,
+}: {
+  searchParams?: { callbackUrl?: string | string[] }
+}) {
+  const session = await auth()
+  const callbackUrl =
+    typeof searchParams?.callbackUrl === "string" &&
+    searchParams.callbackUrl.startsWith("/") &&
+    !searchParams.callbackUrl.startsWith("//")
+      ? searchParams.callbackUrl
+      : "/"
+
+  if (session) {
+    redirect(callbackUrl)
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-amber-50 to-orange-100">
       <div className="w-full max-w-md p-8 bg-white rounded-xl shadow-lg border border-amber-100">
@@ -24,7 +41,7 @@ export default function LoginPage() {
           <form
             action={async () => {
               "use server"
-              await signIn("microsoft-entra-id", { redirectTo: "/" })
+              await signIn("microsoft-entra-id", { redirectTo: callbackUrl })
             }}
           >
             <Button
